@@ -22,13 +22,13 @@ class SpacesController < ApplicationController
 
   # PUT /stores/:store_id/spaces/:id
   def update
-    @space.update(space_params)
-    head :no_content
+    @space.update!(space_params)
+    json_response(@space)
   end
 
   # DELETE /stores/:store_id/spaces/:id
   def destroy
-    @space.destroy
+    @space.destroy!
     head :no_content
   end
 

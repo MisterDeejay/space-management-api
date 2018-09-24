@@ -7,43 +7,42 @@
 * [Setup](./README.md#setup)
 * [Running the app](./README.md#running-the-app)
 * [Running the tests](./README.md#running-the-tests)
-* [Development notes](./README.md#development-notes)
 
 ## Description
 
 This app is a simple API application that responds to endpoints at /stores and /spaces to give clients the ability to manage short term leasing for retail spaces. The endpoint at /stores allows clients to create stores with the following attributes.
-    ```
+
     Store
     # title - String
     # city - String
     # street - String
     # space_count - Integer
-    ```
+
 The endpoint at /spaces allows clients to create spaces with the following attributes.
-    ```
+
     Space
     # title - String
     # size - Decimal
     # price_per_day - Decimal
     # price_per_week - Decimal
     # price_per_month - Decimal
-    ```
 
 ## Task
 
 Your task is to build this part of the API
-• Please use Ruby on Rails for the the task
-• Please create all CRUD endpoints for stores and spaces
-• Store attributes: id (uuid), title, city, street, spaces_count, created_at, updated_at
-• Space attributes: id (uuid), store, title, size, price_per_day, price_per_week, price_per_month, created_at, updated_at
-• We want to filter the entries via a GET filter for every attribute
-• Example: GET /stores?title=like:Center
-• Keywords to SQL: eq => =, like => ILIKE, gt => >, lt => <
-• Add an endpoint to get a price quote for a space
-• GET /spaces/:id/price/:start_date/:end_date
-• Have in mind the different prices
-• Assume the store is open all days
-• A month is 30 days
+
+  * Please use Ruby on Rails for the the task
+  * Please create all CRUD endpoints for stores and spaces
+  * Store attributes: id (uuid), title, city, street, spaces_count, created_at, updated_at
+  * Space attributes: id (uuid), store, title, size, price_per_day, price_per_week, price_per_month, created_at, updated_at
+  * We want to filter the entries via a GET filter for every attribute
+  * Example: GET /stores?title=like:Center
+  * Keywords to SQL: eq => =, like => ILIKE, gt => >, lt => <
+  * Add an endpoint to get a price quote for a space
+  * GET /spaces/:id/price/:start_date/:end_date
+  * Have in mind the different prices
+  * Assume the store is open all days
+  * A month is 30 days
 
 ## Setup
 
@@ -83,28 +82,40 @@ Your task is to build this part of the API
 
     ```curl -H "Content-Type: application/json" -X POST -d '{"title":"Elm Space","size":"15","price_per_day":"10.25","price_per_week":"61.50","price_per_month":"287"}' http://localhost:3000/stores/1/spaces```
 
-12. To get back a list of all Stores
+12. To get back a list of all stores and/or filtered by attribute
 
-To get back the bug count by application token
+    ```curl http://localhost:3000/stores```
 
-    ```curl http://localhost:3000/bugs?application_token=<application_token>```
+    ```curl http://localhost:3000/stores?title=like:Ab```
 
-12. To get back a specific bug
+13. To get a list back of all spaces in a specific store
 
-    ```curl http://localhost:3000/bugs/<bug_number>?application_token=<application_token>```
+    ```curl https://localhost:3000/stores/1/spaces```
+
+14. To get a specific store or space back
+
+    ```curl https://localhost:3000/stores/1```
+
+    ```curl https://localhost:3000/stores/1/spaces/1```
+
+15. To update a specific store's attributes
+
+    ```curl -H "Content-Type: application/json" -X PUT -d '{"title":"Abcde Store"}' http://localhost:3000/stores/1```
+
+16. To update a specific space's attributes
+
+    ```curl -H "Content-Type: application/json" -X PUT -d '{"title":"Peach Space"}' http://localhost:3000/stores/1/spaces/1```
+
+17. To delete a specific store and/or space
+
+    ```curl -X DELETE http://localhost:3000/stores/2```
+
+    ```curl -X DELETE http://localhost:3000/stores/1/space/3```
+
+18. To get a price quote back for a specific space
+
+    ```curl http://localhost:3000/stores/1/spaces/2/price/2018-12-01/2019-12-01```
 
 ## Running the tests
 
     rspec spec/
-
-## Development Notes
-
-* A bug number is automatically assigned to each bug when submitting the params to create a new one. An error is raised if a number is accidentally submitted with the bug. All bug creation submission must include an application token. Bug numbers start at one and increment by one for each additional bug.
-
-* An combo index has been added to the `application_token` and `number` column in the `Bug` table to allow for faster lookup when submitting to /bugs/<bug_number>?application_token=<application_token>
-
-* A redis key-value cache store has been configured to cache request to ``/bugs/count?application_token=<application_token>`. Each time a request is made for a specific `application_token` to the url, the application will use that token as the key checking for the value in the cache. If available it will return that value; otherwise, it will execute a query to find the total number of bugs with that application token, store that value in cache, and finally return it in the response.
-
-* Sidekiq was configured for Bug/State creation. Requests made to /bugs will add a `CreateBugAndStateJob` worker to the queue. This worker uses the `BugCreator` and `StateCreator` class to handle record creation.
-
-* The `ExceptionHandler` class was created to rescue the common errors raised from requests made to the API and return error hashes with descriptive messages.

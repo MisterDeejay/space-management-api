@@ -20,13 +20,13 @@ class StoresController < ApplicationController
 
   # PUT /stores/:id
   def update
-    @store.update(store_params)
-    head :no_content
+    @store.update!(store_params)
+    json_response(@store)
   end
 
   # DELETE /stores/:id
   def destroy
-    @store.destroy
+    @store.destroy!
     head :no_content
   end
 
