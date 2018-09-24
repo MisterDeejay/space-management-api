@@ -1,9 +1,9 @@
 class StoresController < ApplicationController
   before_action :set_store, only: [:show, :update, :destroy]
+  before_action :set_stores, only: [:index]
 
   # GET /stores
   def index
-    @stores = Store.all
     json_response(@stores)
   end
 
@@ -38,5 +38,13 @@ class StoresController < ApplicationController
 
   def set_store
     @store = Store.find(params[:id])
+  end
+
+  def set_stores
+    @stores = if store_params.present?
+      QueryFinder.new('Store', store_params).run
+    else
+      Store.all
+    end
   end
 end

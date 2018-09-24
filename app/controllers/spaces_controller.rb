@@ -2,12 +2,11 @@ class SpacesController < ApplicationController
   before_action :set_store
   before_action :set_space, only: [:show, :update, :destroy, :price]
   before_action :validate_spaces_count, only: [:create]
-  before_action :set_stores, only: [:index]
   before_action :calculate_price_quote, only: [:price]
 
   # GET /stores/:store_id/spaces
   def index
-    json_response(@spaces)
+    json_response(@store.spaces)
   end
 
   # GET /stores/:store_id/spaces/:id
@@ -17,8 +16,8 @@ class SpacesController < ApplicationController
 
   # POST /stores/:store_id/spaces
   def create
-    @store.spaces.create!(space_params)
-    json_response(@store, :created)
+    @space = @store.spaces.create!(space_params)
+    json_response(@space, :created)
   end
 
   # PUT /stores/:store_id/spaces/:id
@@ -61,13 +60,5 @@ class SpacesController < ApplicationController
 
   def set_space
     @space = @store.spaces.find_by!(id: params[:id]) if @store
-  end
-
-  def set_stores
-    @spaces = if params.present?
-      QueryFinder.new(@store.spaces.first.class.to_s, space_params).run
-    else
-      @store.spaces
-    end
   end
 end

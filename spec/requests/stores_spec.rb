@@ -5,15 +5,47 @@ RSpec.describe 'Stores API', type: :request do
   let(:store_id) { stores.first.id }
 
   describe 'GET /stores' do
-    before { get '/stores' }
+    context 'without query params' do
+      before { get '/stores' }
 
-    it 'returns stores' do
-      expect(json).not_to be_empty
-      expect(json.size).to eq(10)
+      it 'returns stores' do
+        expect(json).not_to be_empty
+        expect(json.size).to eq(10)
+      end
+
+      it 'returns status code 200' do
+        expect(response).to have_http_status(200)
+      end
     end
 
-    it 'returns status code 200' do
-      expect(response).to have_http_status(200)
+    context 'with query params' do
+      let(:query_param) { "Elm" }
+      let!(:store_1) { FactoryBot.create(:store, title: "#{query_param}_1") }
+      let!(:store_2) { FactoryBot.create(:store, title: "#{query_param}_2") }
+
+      context 'correctly formed' do
+        before { get "/stores?title=like:#{query_param}" }
+
+        it 'returns the matching records' do
+          expect(json.count).to eq(2)
+
+          titles = json.map { |s| s['title'] }
+          expect(titles.include?(store_1.title)).to be_truthy
+          expect(titles.include?(store_2.title)).to be_truthy
+        end
+      end
+
+      context 'incorrectly formed' do
+        before { get "/stores?title=between:#{query_param}" }
+
+        it 'returns status code 404' do
+          expect(response).to have_http_status(422)
+        end
+
+        it 'returns a query finder error' do
+          expect(response.body).to match(/Query failed: Comparison operator does not exist/)
+        end
+      end
     end
   end
 
