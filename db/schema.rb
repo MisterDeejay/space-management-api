@@ -10,13 +10,14 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2018_09_23_090654) do
+ActiveRecord::Schema.define(version: 2018_10_01_181705) do
 
   # These are extensions that must be enabled in order to support this database
+  enable_extension "pgcrypto"
   enable_extension "plpgsql"
 
-  create_table "spaces", force: :cascade do |t|
-    t.bigint "store_id"
+  create_table "spaces", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.uuid "store_id"
     t.string "title", null: false
     t.decimal "size", null: false
     t.decimal "price_per_day", null: false
@@ -28,7 +29,7 @@ ActiveRecord::Schema.define(version: 2018_09_23_090654) do
     t.index ["title", "store_id"], name: "index_spaces_on_title_and_store_id", unique: true
   end
 
-  create_table "stores", force: :cascade do |t|
+  create_table "stores", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.string "title", null: false
     t.string "city", null: false
     t.string "street", null: false

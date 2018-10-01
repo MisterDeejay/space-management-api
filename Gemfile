@@ -3,6 +3,7 @@ git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 
 ruby '2.3.7'
 
+gem 'webdack-uuid_migration'
 gem 'rubyzip'
 gem 'zip-zip'
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
