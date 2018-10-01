@@ -126,11 +126,13 @@ RSpec.describe 'Stores API', type: :request do
       before { put "/stores/#{store_id}", params: valid_attributes }
 
       it 'updates the record' do
-        expect(response.body).to be_empty
+        expect(response.body).to_not be_empty
+        record = Store.find(store_id)
+        expect(record.title).to eq('Shopping')
       end
 
-      it 'returns status code 204' do
-        expect(response).to have_http_status(204)
+      it 'returns status code 200' do
+        expect(response).to have_http_status(200)
       end
     end
   end

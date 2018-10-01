@@ -10,7 +10,7 @@ RSpec.describe 'Items API' do
   # Test suite for GET /stores/:store_id/spaces/
   describe 'GET /stores/:store_id/spaces' do
     before { get "/stores/#{store_id}/spaces/" }
-    
+
     context 'when the store exists' do
       it 'returns status code 200' do
         expect(response).to have_http_status(200)
@@ -182,8 +182,8 @@ RSpec.describe 'Items API' do
     before { put "/stores/#{store_id}/spaces/#{id}", params: valid_attributes }
 
     context 'when the space exists' do
-      it 'returns status code 204' do
-        expect(response).to have_http_status(204)
+      it 'returns status code 200' do
+        expect(response).to have_http_status(200)
       end
 
       it 'updates the space' do
